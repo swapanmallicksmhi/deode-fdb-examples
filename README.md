@@ -1,5 +1,5 @@
-# fdb examples
-Python and Jupyter notebook examples for fdb usage in DE330
+# DEODE fdb examples
+Python fdb usage in DE330
 
 ## Install
 
@@ -10,7 +10,7 @@ micromamba create -n deode_fdb_examples python=3.12
 micromamba env update -n deode_fdb_examples -f environment.yml
 ```
 
-## Activate
+## Activate and load the correct EcCodes 
 ```
 micromamba activate deode_fdb_examples
 module load ecmwf-toolbox/2025.10.1.0
@@ -22,8 +22,8 @@ module load ecmwf-toolbox/2025.10.1.0
 python3 ./find_georef.py
 ```
 
-# Create a kernel for jupyer notebook if of interest
+## Example to read data from FDB, change expver  and georef and archive again.
 
 ```
-python3 -m ipykernel install --user --name=deode_fdb_examples
+python3 ./read_and_write.py
 ```

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# Example for how to extract model level data from file/fdb/polytope and create a time-hight plots. Note that fdb is only available on ECMWF atos.
+# Example for how to read test data from FDB, change expver and georef and write it back again
+# Note that georef is only used as a bogus field here
 
 # Import necessary libraries
 import os
@@ -18,6 +19,7 @@ def check_fdb_env():
 
 
 def fetch_data(request=None):
+    # Fetch the example from FDB 
 
     if request is None:
         request = {
@@ -34,12 +36,14 @@ def fetch_data(request=None):
           "param": 167,
         }
 
-    print ("\nFetch data from FDB:\n ", request)
+    print ("\nFetch data from FDB with:\n ", request)
     data = ekd.from_source("fdb", request, read_all=True)
     return data, request
 
 
 def change_and_write_data(data, modify={}):
+    # Write the data to disk and modify grib keys by grib_set
+    # Should be done in memory when we know how to do it
 
     print ("\nModify data with:", modify)
     file1 = "test1.grib2"
@@ -58,6 +62,8 @@ def change_and_write_data(data, modify={}):
 
 
 def read_and_archive(filename):
+    # Read a grib file with correct FDB keys and flush to FDB
+    # Should be done in memory when we know how to do it
 
     print ("\nRead file and archive to fdb")
     fdb = pyfdb.FDB()
@@ -69,17 +75,18 @@ def read_and_archive(filename):
 
 def main():
 
-    user_georef = f"{os.environ["USER"]}xxxxx"[0:6]
-
-    # Make sure FDB is correct
+    # Make sure FDB environment is correct
     check_fdb_env()
 
     # Fetch the example data and list
     data, request = fetch_data()
-    print(data.ls(extra_keys=["georef"]))
+    print("Data content:\n", data.ls(extra_keys=["georef"]))
 
     # Modify and dump the data
-    modify = { "expver" : "zzzz", "georef" : user_georef }
+    modify = {
+               "expver" : "zzzz", 
+               "georef" : f"{os.environ["USER"]}xxxxx"[0:6] 
+             }
     file_for_fdb = change_and_write_data(data, modify)
 
     # Read the data from disk and archive to FDB
@@ -88,7 +95,7 @@ def main():
     # Get the data agin from FDB and list
     request.update(modify)
     data_new, request = fetch_data(request)
-    print(data_new.ls(extra_keys=["georef"]))
+    print("Data content:\n", data_new.ls(extra_keys=["georef"]))
 
     # Remove the new data from fdb
     wipe_request = request
@@ -103,7 +110,7 @@ def main():
     os.system(cmd)
 
     # Try to get the data again
-    print(f"\nTry to read from FDB again")
+    print(f"\nTry to read from FDB again but expect no data")
     data, request = fetch_data(request)
     print(data.ls())
 

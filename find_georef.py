@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# Example for how to extract model level data from file/fdb/polytope and create a time-hight plots. Note that fdb is only available on ECMWF atos.
+# Example for how to extract model level data from file/fdb/polytope and create a time-hight plots. 
+# Note that fdb is only available on ECMWF atos.
 
 # Import necessary libraries
 import os
@@ -17,8 +18,6 @@ def check_fdb_env():
         raise KeyError("Make sure to load ecmwf-toolbox before your start")
 
 
-
-
 def get_georefs(datetime):
     date = datetime.strftime("%Y%m%d")
     time = datetime.strftime("%H")
@@ -29,12 +28,17 @@ def get_georefs(datetime):
       "date": date,
       "time": time,
       "param": 167,
+      "step": 0,
     }
-    recorded_georefs = []
+    recorded_georefs = {}
     for entry in pyfdb.list(request, keys=True):
       georef = entry["keys"]["georef"]
       if georef not in recorded_georefs:
-        recorded_georefs.append(georef)
+        recorded_georefs[georef] = []
+      stream = entry["keys"]["stream"]
+      if stream not in recorded_georefs[georef]:
+        recorded_georefs[georef].append(stream)
+
     return recorded_georefs
 
 def timespan(days):

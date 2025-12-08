@@ -24,13 +24,15 @@ micromamba activate deode_fdb_examples
 module load ecmwf-toolbox/2025.10.1.0
 ```
 
-## List available georefs from FDB for a specific date
+## List example
+List available georefs and corresponding streams from FDB for the past 5 days. Note that we used stream = oper/enfo for deterministic/ensemble runs respectively
 
 ```
 python3 ./find_georef.py
 ```
 
-## Example to read data from FDB, change expver  and georef and archive again.
+## Read write example
+Example to read data from FDB, change expver and georef, and archive again.
 
 ```
 python3 ./read_and_write.py

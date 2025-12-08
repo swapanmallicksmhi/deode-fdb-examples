@@ -27,11 +27,19 @@ def get_data(date, georef, param=None, step=None):
     if param is None:
         request1.pop("param")
     if step is not None:
+        if isinstance(step,str):
+            steps = [step]
+        else:
+            steps = step
+        requests = []
         request2 = request1.copy()
-        request1["step"] = step
-        # Make sure we include accumulated fields
-        request2["step"] = f"0-{step}"
-        requests = [ request1, request2 ]
+        print(steps)
+        for _step in steps:
+          request1["step"] = _step
+          requests.append(request1)
+          if _step > 0 :
+            request2["step"] = f"0-{_step}"
+            requests.append(request2)
 
     name = "_".join([str(x) for x in requests[0].values() if isinstance(x, (str, int))])
     filename = f"/scratch/{USER}/{name}.grib2"
@@ -54,10 +62,12 @@ def get_data(date, georef, param=None, step=None):
 def main():
 
     check_fdb_env()
-    get_data(date=20241119, georef="ud3q9t", param=[134,144,151,165,166,167,168,169,175,228164,228228,260046],step=1)
-    get_data(date=20241119, georef="ud3q9t", step=[2,3])
-    #get_data(date=20241119, georef="ud3q9t")
-
+    # Example with several parameters and one step
+    #get_data(date=20241119, georef="ud3q9t", param=[134,144,151,165,166,167,168,169,175,228164,228228,260046],step=1)
+    # Example with all parameters and selected steps
+    #get_data(date=20241119, georef="ud3q9t", step=[2,3])
+    # This is an ensemble case 
+    get_data(date=20251205, georef="sw7rm9", step = [2,3], param = [167])
 
 if __name__ == "__main__":
     main()

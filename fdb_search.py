@@ -12,7 +12,7 @@ from tools import check_fdb_env
 USER = os.environ["USER"]
 
 def get_data(date, georef, param=None, step=None):
-    request1 = {
+    request = {
         "class": "d1",
         "dataset": "on-demand-extremes-dt",
         "expver": "0099",
@@ -23,25 +23,23 @@ def get_data(date, georef, param=None, step=None):
         "param": param,
     }
 
-    requests = [ request1 ]
     if param is None:
-        request1.pop("param")
+        request.pop("param")
     if step is not None:
         if isinstance(step,str):
             steps = [step]
         else:
             steps = step
         requests = []
-        request2 = request1.copy()
-        print(steps)
         for _step in steps:
-          request1["step"] = _step
-          requests.append(request1)
+          requests.append(request.copy())
+          print(requests)
+          requests[-1]["step"] = _step
           if _step > 0 :
-            request2["step"] = f"0-{_step}"
-            requests.append(request2)
+            requests.append(request.copy())
+            requests[-1]["step"] = f"0-{_step}"
 
-    name = "_".join([str(x) for x in requests[0].values() if isinstance(x, (str, int))])
+    name = "_".join([str(x) for x in request.values() if isinstance(x, (str, int))])
     filename = f"/scratch/{USER}/{name}.grib2"
 
     j = 0
